@@ -40,10 +40,20 @@ test('standalone pages resolve local dependencies, anchors and all three languag
         let file = join(root, url.pathname);
         if (url.pathname.endsWith('/')) file += 'index.html';
         assert(existsSync(file), `${path}: ${reference}`);
-        if (/\.(?:css|js|mjs)$/.test(url.pathname)) assert.equal(url.searchParams.get('v'), url.pathname.includes('site-chrome') ? '1.2.5' : '20261017d');
+        if (/\.(?:css|js|mjs)$/.test(url.pathname)) {
+          const expected = url.pathname.includes('site-chrome') ? '1.2.5'
+            : url.pathname.endsWith('/longevity-v7.css') ? '20261110-month-cta'
+            : '20261017d';
+          assert.equal(url.searchParams.get('v'), expected);
+        }
       }
     }
     assert.match(html, /href="https:\/\/linktr\.ee\/ZuzaluLongevityChiangMai"/);
+    if (locale === '' || locale === 'en') {
+      assert.match(html, /class="btn month-wide" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Longevity Month 2026</);
+      assert.doesNotMatch(html, /Explore our practice/);
+      assert.match(html, /class="actions register-row"><a class="btn register-cta"/);
+    }
     assert.match(html, /rel="canonical" href="https:\/\/4seas\.xyz\/longevity\//);
     assert(html.indexOf('id="peptide"') < html.indexOf('id="data"'));
     assert.match(html, /2026-11-30/);

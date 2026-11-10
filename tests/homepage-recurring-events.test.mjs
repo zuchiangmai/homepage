@@ -48,7 +48,7 @@ test("homepage keeps Longevity first, ETHChiangmai second, and Xenoria City thir
     assert.equal(found.length, 1)
     return found[0].slice(6, -1)
   }
-  assert.equal(hrefOf(slides[0]), "https://4seas.xyz/longevity/longevitymonth2026/")
+  assert.equal(hrefOf(slides[0]), "https://4seas.xyz/longevity/en/")
   assert.match(slides[0], /zuzalu-longevity-month-2026-20261107\.webp/)
   assert.doesNotMatch(slides[0], /ethchiangmai|xenoria/)
   assert.equal(hrefOf(slides[1]), "https://ethchiangmai.com")
