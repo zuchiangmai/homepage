@@ -11,7 +11,10 @@ def public_path(relative):
     path = relative.as_posix()
     if path.endswith('index.html'):
         return path[:-len('index.html')]
-    return path + '?v=20261017d'
+    # longevity-v7.css?v=20261017d stays cached at Cloudflare until 2026-11-16.
+    # The release check must use the same uncached query the pages request.
+    version = '20261110-month-edge' if path.endswith('longevity-v7.css') else '20261017d'
+    return path + '?v=' + version
 
 
 def validate(root, base_url):
