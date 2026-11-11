@@ -13,7 +13,7 @@ def public_path(relative):
         return path[:-len('index.html')]
     # longevity-v7.css?v=20261017d stays cached at Cloudflare until 2026-11-16.
     # The release check must use the same uncached query the pages request.
-    version = '20261110-month-edge' if path.endswith('longevity-v7.css') else '20261017d'
+    version = '20261111-register-now' if path.endswith('longevity-v7.css') else '20261017d'
     return path + '?v=' + version
 
 

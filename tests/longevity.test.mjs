@@ -42,7 +42,7 @@ test('standalone pages resolve local dependencies, anchors and all three languag
         assert(existsSync(file), `${path}: ${reference}`);
         if (/\.(?:css|js|mjs)$/.test(url.pathname)) {
           const expected = url.pathname.includes('site-chrome') ? '1.2.5'
-            : url.pathname.endsWith('/longevity-v7.css') ? '20261110-month-edge'
+            : url.pathname.endsWith('/longevity-v7.css') ? '20261111-register-now'
             : '20261017d';
           assert.equal(url.searchParams.get('v'), expected);
         }
@@ -52,7 +52,9 @@ test('standalone pages resolve local dependencies, anchors and all three languag
     if (locale === '' || locale === 'en') {
       assert.match(html, /class="btn month-wide" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Longevity Month 2026</);
       assert.doesNotMatch(html, /Explore our practice/);
-      assert.match(html, /class="actions register-row"><a class="btn register-cta"/);
+      assert.match(html, /class="actions register-row"><a class="btn register-cta register-now" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</);
+      assert.equal((html.match(/class="[^"]*register-now[^"]*" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</g) || []).length, 5);
+      assert.doesNotMatch(html, /See key dates|Ask about health assessments|Ask about ongoing participation|Explore Longevity Month|Explore the data center/);
     }
     assert.match(html, /rel="canonical" href="https:\/\/4seas\.xyz\/longevity\//);
     assert(html.indexOf('id="peptide"') < html.indexOf('id="data"'));
