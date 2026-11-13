@@ -30,9 +30,11 @@ export function navigation(locale) {
   return NAVIGATION.map(item => ({
     ...item,
     label: item.labels[code],
-    href: locale && ['coliving', 'longevity'].includes(item.key)
-      ? item.href + code + '/'
-      : item.key === 'login'
+    href: item.key === 'longevity'
+      ? HOME + 'longevity/en/'
+      : locale && item.key === 'coliving'
+        ? item.href + code + '/'
+        : item.key === 'login'
         ? HOME + 'coliving/' + (locale ? code : 'en') + '/login'
         : item.href,
   }));

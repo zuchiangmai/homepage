@@ -39,7 +39,7 @@ export function mountQueryLanguage(root, helpers) {
   });
   root.querySelectorAll('.fs-navigation a').forEach(link => {
     const url = new URL(link.href);
-    if (/^\/(longevity|coliving-community)\//.test(url.pathname)) {
+    if (/^\/coliving-community\//.test(url.pathname)) {
       url.pathname = url.pathname.replace(/\/(?:en|zh|th)\/$/, '/') + locale + '/';
       link.href = url.href;
     } else if (/^\/coliving\/(?:en|zh|th)\/login\/?$/.test(url.pathname)) {

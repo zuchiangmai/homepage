@@ -23,7 +23,7 @@ export const NOT_FOUND_COPY = {
   },
 };
 export const NOT_FOUND_DESTINATIONS = [
-  'https://4seas.xyz/coliving-community/', 'https://4seas.xyz/longevity/',
+  'https://4seas.xyz/coliving-community/', 'https://4seas.xyz/longevity/en/',
   'https://4seas.xyz/event', 'https://4seas.xyz/residency', 'https://book.4seas.xyz/',
 ];
 
