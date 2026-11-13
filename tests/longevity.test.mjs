@@ -45,7 +45,7 @@ test('standalone pages resolve local dependencies, anchors and all three languag
         if (url.pathname.endsWith('/')) file += 'index.html';
         assert(existsSync(file), `${path}: ${reference}`);
         if (/\.(?:css|js|mjs)$/.test(url.pathname)) {
-          const expected = url.pathname.includes('site-chrome') ? '1.2.5'
+          const expected = url.pathname.includes('site-chrome') ? '1.2.6'
             : url.pathname.endsWith('/longevity-v7.css') ? '20261111-register-now'
             : '20261017d';
           assert.equal(url.searchParams.get('v'), expected);

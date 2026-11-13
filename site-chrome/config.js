@@ -1,5 +1,5 @@
 // Single source for all public sites. Business navigation belongs to each app.
-export const VERSION = '1.2.5';
+export const VERSION = '1.2.6';
 export const HOME = 'https://4seas.xyz/';
 export const NAVIGATION = Object.freeze([
   { key: 'longevity', label: 'Longevity', labels: { en: 'Longevity', zh: 'Longevity', th: 'สุขภาพระยะยาว' }, href: HOME + 'longevity/' },
