@@ -66,7 +66,7 @@ test('shared interaction closes on Escape, outside clicks and desktop resize and
 });
 test('checked-in static pages, styles, script and logo are generated from the same package', () => {
   execFileSync(process.execPath, ['scripts/generate-site-chrome.mjs', '--check'], { cwd: new URL('../', import.meta.url), stdio: 'pipe' });
-  for (const file of ['index.html','404.html', ...['longevity','coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(locale => `${base}/${locale}index.html`))].filter(file => file !== 'longevity/en/index.html')) {
+  for (const file of ['index.html','404.html', ...['longevity','coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(locale => `${base}/${locale}index.html`))].filter(file => file !== 'longevity/en/index.html' && file !== 'longevity/index.html')) {
     const html=readFileSync(new URL('../'+file,import.meta.url),'utf8');
     assert.equal((html.match(/class="fs-header"/g)||[]).length,1,file);
     assert.equal((html.match(/class="fs-footer"/g)||[]).length,1,file);

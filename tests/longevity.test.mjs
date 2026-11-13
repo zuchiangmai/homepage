@@ -29,7 +29,11 @@ test('standalone pages resolve local dependencies, anchors and all three languag
   assert.match(englishRedirect, /http-equiv="refresh" content="0; url=https:\/\/get\.4seas\.xyz\/"/);
   assert.match(englishRedirect, /location\.replace\("https:\/\/get\.4seas\.xyz\/"\)/);
   assert.doesNotMatch(englishRedirect, /id="l-event-grid"|class="fs-header"/);
-  for (const locale of ['', 'zh', 'th']) {
+  const rootRedirect = read('longevity/index.html');
+  assert.match(rootRedirect, /http-equiv="refresh" content="0; url=https:\/\/4seas\.xyz\/longevity\/en\/"/);
+  assert.match(rootRedirect, /location\.replace\("https:\/\/4seas\.xyz\/longevity\/en\/"\)/);
+  assert.doesNotMatch(rootRedirect, /id="l-event-grid"|class="fs-header"/);
+  for (const locale of ['zh', 'th']) {
     const path = `longevity/${locale ? locale + '/' : ''}index.html`;
     const html = read(path);
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
@@ -53,13 +57,6 @@ test('standalone pages resolve local dependencies, anchors and all three languag
       }
     }
     assert.match(html, /href="https:\/\/linktr\.ee\/ZuzaluLongevityChiangMai"/);
-    if (locale === '') {
-      assert.match(html, /class="btn month-wide" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Longevity Month 2026</);
-      assert.doesNotMatch(html, /Explore our practice/);
-      assert.match(html, /class="actions register-row"><a class="btn register-cta register-now" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</);
-      assert.equal((html.match(/class="[^"]*register-now[^"]*" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</g) || []).length, 5);
-      assert.doesNotMatch(html, /See key dates|Ask about health assessments|Ask about ongoing participation|Explore Longevity Month|Explore the data center/);
-    }
     assert.match(html, /rel="canonical" href="https:\/\/4seas\.xyz\/longevity\//);
     assert(html.indexOf('id="peptide"') < html.indexOf('id="data"'));
     assert.match(html, /2026-11-30/);
@@ -224,7 +221,7 @@ test('Longevity payload ships no .mjs files', () => {
 
 test('Longevity pages ship no baked-in events and the payload has no snapshot', () => {
   assert.equal(existsSync(join(root, 'longevity/assets/longevity-events.json')), false);
-  for (const locale of ['', 'zh/', 'th/']) {
+  for (const locale of ['zh/', 'th/']) {
     const html = read(`longevity/${locale}index.html`);
     assert.doesNotMatch(html, /l-event-card|longevity-events|2026\.10\.17/);
     assert.match(html, /id="l-event-grid" class="l-event-grid" aria-busy="true"><\/div>/);
