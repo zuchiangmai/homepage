@@ -24,45 +24,13 @@ const solaFetch = rows => async url => {
 };
 const runtime = read('longevity/assets/site-i18n.js');
 
-test('standalone pages resolve local dependencies, anchors and all three language entries', () => {
-  const englishRedirect = read('longevity/en/index.html');
-  assert.match(englishRedirect, /http-equiv="refresh" content="0; url=https:\/\/get\.4seas\.xyz\/"/);
-  assert.match(englishRedirect, /location\.replace\("https:\/\/get\.4seas\.xyz\/"\)/);
-  assert.doesNotMatch(englishRedirect, /id="l-event-grid"|class="fs-header"/);
-  const rootRedirect = read('longevity/index.html');
-  assert.match(rootRedirect, /http-equiv="refresh" content="0; url=https:\/\/4seas\.xyz\/longevity\/en\/"/);
-  assert.match(rootRedirect, /location\.replace\("https:\/\/4seas\.xyz\/longevity\/en\/"\)/);
-  assert.doesNotMatch(rootRedirect, /id="l-event-grid"|class="fs-header"/);
-  for (const locale of ['zh', 'th']) {
-    const path = `longevity/${locale ? locale + '/' : ''}index.html`;
+test('every longevity language entry redirects straight to get.4seas.xyz', () => {
+  for (const path of ['longevity/index.html', 'longevity/en/index.html', 'longevity/zh/index.html', 'longevity/th/index.html']) {
     const html = read(path);
-    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
-    assert.equal(ids.length, new Set(ids).size);
-    assert.deepEqual([...html.matchAll(/data-language="([^"]+)"/g)].map(m => m[1]), locales);
-    assert.equal((html.match(/<h1\b/g) || []).length, 1);
-    assert.doesNotMatch(html, /localhost|127\.0\.0\.1|\/(?:en|zh|th)\/[^" ]*\.html|(?:coliving|canteen|hosts)\.html|href="[^" ]*\/hosts\//i);
-    for (const [, reference] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
-      if (reference.startsWith('#')) assert(ids.includes(reference.slice(1)), reference);
-      else if (reference.startsWith('/')) {
-        const url = new URL(reference, 'https://4seas.xyz');
-        let file = join(root, url.pathname);
-        if (url.pathname.endsWith('/')) file += 'index.html';
-        assert(existsSync(file), `${path}: ${reference}`);
-        if (/\.(?:css|js|mjs)$/.test(url.pathname)) {
-          const expected = url.pathname.includes('site-chrome') ? '1.2.6'
-            : url.pathname.endsWith('/longevity-v7.css') ? '20261111-register-now'
-            : '20261017d';
-          assert.equal(url.searchParams.get('v'), expected);
-        }
-      }
-    }
-    assert.match(html, /href="https:\/\/linktr\.ee\/ZuzaluLongevityChiangMai"/);
-    assert.match(html, /rel="canonical" href="https:\/\/4seas\.xyz\/longevity\//);
-    assert(html.indexOf('id="peptide"') < html.indexOf('id="data"'));
-    assert.match(html, /2026-11-30/);
-    assert.match(html, /2026-12-26/);
-    assert.match(html, /2026-12-28/);
-    assert.doesNotMatch(html, /\bconference\b|Second Nomad Market|v11-os-connection/);
+    assert.match(html, /http-equiv="refresh" content="0; url=https:\/\/get\.4seas\.xyz\/"/);
+    assert.match(html, /location\.replace\("https:\/\/get\.4seas\.xyz\/"\)/);
+    assert.match(html, /rel="canonical" href="https:\/\/get\.4seas\.xyz\/"/);
+    assert.doesNotMatch(html, /id="l-event-grid"|class="fs-header"|site-chrome/);
   }
   assert.match(read('index.html'), /href="https:\/\/get\.4seas\.xyz\/"[^>]*>Longevity<\/a>/);
 });
@@ -221,9 +189,8 @@ test('Longevity payload ships no .mjs files', () => {
 
 test('Longevity pages ship no baked-in events and the payload has no snapshot', () => {
   assert.equal(existsSync(join(root, 'longevity/assets/longevity-events.json')), false);
-  for (const locale of ['zh/', 'th/']) {
+  for (const locale of ['', 'en/', 'zh/', 'th/']) {
     const html = read(`longevity/${locale}index.html`);
-    assert.doesNotMatch(html, /l-event-card|longevity-events|2026\.10\.17/);
-    assert.match(html, /id="l-event-grid" class="l-event-grid" aria-busy="true"><\/div>/);
+    assert.doesNotMatch(html, /l-event-card|longevity-events|2026\.10\.17|id="l-event-grid"/);
   }
 });

@@ -12,7 +12,7 @@ async function output(path, value) {
   else await writeFile(url, value);
 }
 const labels = { en: 'EN', zh: '中文', th: 'ไทย' };
-const pages = ['index.html', '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => path !== 'longevity/en/index.html' && path !== 'longevity/index.html');
+const pages = ['index.html', '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => !path.startsWith('longevity/') || path.startsWith('longevity/longevitymonth'));
 for (const path of pages) {
   if (path === '404.html') {
     const options = { assetBase: '/images/site-chrome' };
