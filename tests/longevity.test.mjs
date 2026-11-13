@@ -64,7 +64,7 @@ test('standalone pages resolve local dependencies, anchors and all three languag
     assert.match(html, /2026-12-28/);
     assert.doesNotMatch(html, /\bconference\b|Second Nomad Market|v11-os-connection/);
   }
-  assert.match(read('index.html'), /href="https:\/\/4seas\.xyz\/longevity\/en\/"[^>]*>Longevity<\/a>/);
+  assert.match(read('index.html'), /href="https:\/\/get\.4seas\.xyz\/"[^>]*>Longevity<\/a>/);
 });
 
 test('Sola fixture maps to display fields, real profiles and valid period boundaries', () => {

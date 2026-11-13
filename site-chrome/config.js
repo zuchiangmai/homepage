@@ -31,7 +31,7 @@ export function navigation(locale) {
     ...item,
     label: item.labels[code],
     href: item.key === 'longevity'
-      ? HOME + 'longevity/en/'
+      ? 'https://get.4seas.xyz/'
       : locale && item.key === 'coliving'
         ? item.href + code + '/'
         : item.key === 'login'

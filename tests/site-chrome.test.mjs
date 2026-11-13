@@ -18,7 +18,7 @@ test('every public menu sends Coliving to the introduction directly after Longev
     assert.equal(loginItem.href, `https://4seas.xyz/coliving/${loginLocale}/login`);
     assert.deepEqual(items.map(i => i.label), locale === 'th' ? thai : english);
     assert.equal(items[3].href, 'https://4seas.xyz/event');
-    assert.equal(items.find(i => i.key === 'longevity').href, 'https://4seas.xyz/longevity/en/');
+    assert.equal(items.find(i => i.key === 'longevity').href, 'https://get.4seas.xyz/');
   }
 });
 test('Thai header keeps the existing Thai tagline and navigation', () => {
