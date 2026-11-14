@@ -18,7 +18,6 @@ test('every public menu sends Coliving to the introduction directly after Longev
     assert.equal(loginItem.href, `https://4seas.xyz/coliving/${loginLocale}/login`);
     assert.deepEqual(items.map(i => i.label), locale === 'th' ? thai : english);
     assert.equal(items[3].href, 'https://4seas.xyz/event');
-    assert.equal(items.find(i => i.key === 'longevity').href, 'https://get.4seas.xyz/');
   }
 });
 test('Thai header keeps the existing Thai tagline and navigation', () => {
@@ -66,7 +65,7 @@ test('shared interaction closes on Escape, outside clicks and desktop resize and
 });
 test('checked-in static pages, styles, script and logo are generated from the same package', () => {
   execFileSync(process.execPath, ['scripts/generate-site-chrome.mjs', '--check'], { cwd: new URL('../', import.meta.url), stdio: 'pipe' });
-  for (const file of ['index.html','404.html', ...['longevity','coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(locale => `${base}/${locale}index.html`))].filter(file => !file.startsWith('longevity/') || file.startsWith('longevity/longevitymonth'))) {
+  for (const file of ['index.html','404.html', ...['longevity','coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(locale => `${base}/${locale}index.html`))]) {
     const html=readFileSync(new URL('../'+file,import.meta.url),'utf8');
     assert.equal((html.match(/class="fs-header"/g)||[]).length,1,file);
     assert.equal((html.match(/class="fs-footer"/g)||[]).length,1,file);

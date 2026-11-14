@@ -24,15 +24,46 @@ const solaFetch = rows => async url => {
 };
 const runtime = read('longevity/assets/site-i18n.js');
 
-test('every longevity language entry redirects straight to get.4seas.xyz', () => {
-  for (const path of ['longevity/index.html', 'longevity/en/index.html', 'longevity/zh/index.html', 'longevity/th/index.html']) {
+test('standalone pages resolve local dependencies, anchors and all three language entries', () => {
+  for (const locale of ['', ...locales]) {
+    const path = `longevity/${locale ? locale + '/' : ''}index.html`;
     const html = read(path);
-    assert.match(html, /http-equiv="refresh" content="0; url=https:\/\/get\.4seas\.xyz\/"/);
-    assert.match(html, /location\.replace\("https:\/\/get\.4seas\.xyz\/"\)/);
-    assert.match(html, /rel="canonical" href="https:\/\/get\.4seas\.xyz\/"/);
-    assert.doesNotMatch(html, /id="l-event-grid"|class="fs-header"|site-chrome/);
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+    assert.equal(ids.length, new Set(ids).size);
+    assert.deepEqual([...html.matchAll(/data-language="([^"]+)"/g)].map(m => m[1]), locales);
+    assert.equal((html.match(/<h1\b/g) || []).length, 1);
+    assert.doesNotMatch(html, /localhost|127\.0\.0\.1|\/(?:en|zh|th)\/[^" ]*\.html|(?:coliving|canteen|hosts)\.html|href="[^" ]*\/hosts\//i);
+    for (const [, reference] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      if (reference.startsWith('#')) assert(ids.includes(reference.slice(1)), reference);
+      else if (reference.startsWith('/')) {
+        const url = new URL(reference, 'https://4seas.xyz');
+        let file = join(root, url.pathname);
+        if (url.pathname.endsWith('/')) file += 'index.html';
+        assert(existsSync(file), `${path}: ${reference}`);
+        if (/\.(?:css|js|mjs)$/.test(url.pathname)) {
+          const expected = url.pathname.includes('site-chrome') ? '1.2.5'
+            : url.pathname.endsWith('/longevity-v7.css') ? '20261111-register-now'
+            : '20261017d';
+          assert.equal(url.searchParams.get('v'), expected);
+        }
+      }
+    }
+    assert.match(html, /href="https:\/\/linktr\.ee\/ZuzaluLongevityChiangMai"/);
+    if (locale === '' || locale === 'en') {
+      assert.match(html, /class="btn month-wide" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Longevity Month 2026</);
+      assert.doesNotMatch(html, /Explore our practice/);
+      assert.match(html, /class="actions register-row"><a class="btn register-cta register-now" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</);
+      assert.equal((html.match(/class="[^"]*register-now[^"]*" href="https:\/\/4seas\.xyz\/longevity\/longevitymonth2026\/">Register Now</g) || []).length, 5);
+      assert.doesNotMatch(html, /See key dates|Ask about health assessments|Ask about ongoing participation|Explore Longevity Month|Explore the data center/);
+    }
+    assert.match(html, /rel="canonical" href="https:\/\/4seas\.xyz\/longevity\//);
+    assert(html.indexOf('id="peptide"') < html.indexOf('id="data"'));
+    assert.match(html, /2026-11-30/);
+    assert.match(html, /2026-12-26/);
+    assert.match(html, /2026-12-28/);
+    assert.doesNotMatch(html, /\bconference\b|Second Nomad Market|v11-os-connection/);
   }
-  assert.match(read('index.html'), /href="https:\/\/get\.4seas\.xyz\/"[^>]*>Longevity<\/a>/);
+  assert.match(read('index.html'), /href="https:\/\/4seas.xyz\/longevity\/"[^>]*>Longevity<\/a>/);
 });
 
 test('Sola fixture maps to display fields, real profiles and valid period boundaries', () => {
@@ -189,8 +220,9 @@ test('Longevity payload ships no .mjs files', () => {
 
 test('Longevity pages ship no baked-in events and the payload has no snapshot', () => {
   assert.equal(existsSync(join(root, 'longevity/assets/longevity-events.json')), false);
-  for (const locale of ['', 'en/', 'zh/', 'th/']) {
+  for (const locale of ['', ...locales.map(l => l + '/')]) {
     const html = read(`longevity/${locale}index.html`);
-    assert.doesNotMatch(html, /l-event-card|longevity-events|2026\.10\.17|id="l-event-grid"/);
+    assert.doesNotMatch(html, /l-event-card|longevity-events|2026\.10\.17/);
+    assert.match(html, /id="l-event-grid" class="l-event-grid" aria-busy="true"><\/div>/);
   }
 });
