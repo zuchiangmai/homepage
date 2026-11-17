@@ -1,5 +1,5 @@
 // Single source for all public sites. Business navigation belongs to each app.
-export const VERSION = '1.2.5';
+export const VERSION = '1.2.6';
 export const HOME = 'https://4seas.xyz/';
 export const NAVIGATION = Object.freeze([
   { key: 'longevity', label: 'Longevity', labels: { en: 'Longevity', zh: 'Longevity', th: 'สุขภาพระยะยาว' }, href: HOME + 'longevity/' },
@@ -30,9 +30,11 @@ export function navigation(locale) {
   return NAVIGATION.map(item => ({
     ...item,
     label: item.labels[code],
-    href: locale && ['coliving', 'longevity'].includes(item.key)
-      ? item.href + code + '/'
-      : item.key === 'login'
+    href: item.key === 'longevity'
+      ? 'https://get.4seas.xyz/'
+      : locale && item.key === 'coliving'
+        ? item.href + code + '/'
+        : item.key === 'login'
         ? HOME + 'coliving/' + (locale ? code : 'en') + '/login'
         : item.href,
   }));
