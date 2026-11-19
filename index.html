@@ -540,10 +540,12 @@ $(document).ready(function() {
     // 不再进行排序,使用API默认排序
     // sortCardsByDate(); // 注释掉排序
     // 初始化分页
-    initPagination();
+    initPagination(1);
   }
-  // 分页功能 - 修改：支持响应式
-  function initPagination() {
+  // 分页状态
+  let currentEventPage = 1;
+  // 分页功能 - 修改：支持响应式并保持当前页码
+  function initPagination(targetPage) {
     const $cards = $('.data-container .card');
     const totalCards = $cards.length;
     if (totalCards === 0) {
@@ -553,32 +555,42 @@ $(document).ready(function() {
     $('.pagination').show();
     const cardsPerPage = getCardsPerPage(); // 使用响应式函数
     const totalPages = Math.ceil(totalCards / cardsPerPage);
-    let currentPage = 1;
+    if (typeof targetPage === 'number') {
+      currentEventPage = targetPage;
+    }
+    if (currentEventPage < 1) currentEventPage = 1;
+    if (currentEventPage > totalPages) currentEventPage = totalPages;
     // 生成新的分页UI
     const $pages = $('.pages').empty();
     $pages.html(`
       <input type="number" 
              class="page-input" 
-             value="1" 
+             value="${currentEventPage}" 
              min="1" 
              max="${totalPages}">
       <span class="page-divider" style="margin: 0 8px;">/</span>
       <span class="total-pages">${totalPages}</span>
     `);
     // 显示指定页
-    function showPage(page) {
+    function showPage(page, shouldScroll = false) {
       // 验证页码范围
       if (page < 1) page = 1;
       if (page > totalPages) page = totalPages;
-      currentPage = page;
+      currentEventPage = page;
       const start = (page - 1) * cardsPerPage;
       const end = start + cardsPerPage;
       $cards.hide().slice(start, end).show();
       // 更新输入框的值
-      $('.page-input').val(currentPage);
+      $('.page-input').val(currentEventPage);
       // 更新上一页/下一页按钮状态
       $('.prev').toggleClass('disabled', page === 1);
       $('.next').toggleClass('disabled', page === totalPages);
+      if (shouldScroll) {
+        const topEl = document.getElementById('page_top');
+        if (topEl) {
+          topEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     }
     // 绑定输入框事件
     $('.page-input').off('input change').on('input change', function() {
@@ -592,25 +604,25 @@ $(document).ready(function() {
       if (e.which === 13) { // Enter键
         let page = parseInt($(this).val());
         if (!isNaN(page)) {
-          showPage(page);
+          showPage(page, true);
         }
       }
     });
     // 绑定上一页按钮
     $('.prev').off('click').on('click', function(e) {
       e.preventDefault();
-      if (currentPage > 1) {
-        showPage(currentPage - 1);
+      if (currentEventPage > 1) {
+        showPage(currentEventPage - 1, true);
       }
     });
     // 绑定下一页按钮
     $('.next').off('click').on('click', function(e) {
       e.preventDefault();
-      if (currentPage < totalPages) {
-        showPage(currentPage + 1);
+      if (currentEventPage < totalPages) {
+        showPage(currentEventPage + 1, true);
       }
     });
-    showPage(currentPage);
+    showPage(currentEventPage);
   }
   // 数据请求
   let retryCount = 0;
@@ -661,16 +673,19 @@ $(document).ready(function() {
     e.preventDefault();
     window.refreshEvents();
   });
-  // 新增：监听窗口大小变化，重新初始化分页
+  // 监听窗口大小变化：仅在宽度变化（如旋转屏幕或跨断点）时重新计算分页，避免移动端高度滚动重置页码
   let resizeTimer;
+  let lastWindowWidth = window.innerWidth;
   $(window).on('resize', function() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
-      // 只有当卡片已加载时才重新初始化分页
-      if ($('.data-container .card').length > 0) {
-        initPagination();
+      if (window.innerWidth !== lastWindowWidth) {
+        lastWindowWidth = window.innerWidth;
+        if ($('.data-container .card').length > 0) {
+          initPagination(currentEventPage);
+        }
       }
-    }, 250); // 防抖延迟250ms
+    }, 250);
   });
   // 初始化加载 - 默认加载upcoming
   fetchData('upcoming');

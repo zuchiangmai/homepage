@@ -33,6 +33,22 @@ test("homepage event gallery link stays on 4Seas properties", async () => {
   assert.doesNotMatch(source, /href="https:\/\/app\.sola\.day\/event\/4seas"/)
 })
 
+test("homepage event pagination retains active page and ignores height-only resize", async () => {
+  const source = await readFile(new URL("../index.html", import.meta.url), "utf8")
+
+  // Retains current page state
+  assert.match(source, /let currentEventPage = 1;/)
+  assert.match(source, /function initPagination\(targetPage\)/)
+  assert.match(source, /currentEventPage = targetPage;/)
+
+  // Only triggers pagination re-init on width changes (prevents mobile scroll/address bar reset)
+  assert.match(source, /if \(window\.innerWidth !== lastWindowWidth\)/)
+  assert.match(source, /initPagination\(currentEventPage\);/)
+
+  // Provides smooth scroll feedback to #page_top on user pagination action
+  assert.match(source, /topEl\.scrollIntoView\(\{ behavior: 'smooth' \}\);/)
+})
+
 test("homepage keeps Longevity first, ETHChiangmai second, and Xenoria City third", async () => {
   const source = await readFile(new URL("../index.html", import.meta.url), "utf8")
   const styles = await readFile(new URL("../css/4seas-631dbf.webflow.css", import.meta.url), "utf8")
