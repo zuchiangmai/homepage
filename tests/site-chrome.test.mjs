@@ -44,6 +44,8 @@ test('rendered chrome is complete without runtime fetches and escapes input', ()
   assert.equal((footer.match(/<footer/g) || []).length, 1);
   assert.equal((footer.match(/<nav/g) || []).length, 0);
   assert(footer.includes(QUOTE));
+  assert(footer.includes('CHIANG MAI DESOC CO., LTD.'));
+  assert(footer.includes('2/20 Soi 15 Nimmanhaemin Road'));
   assert.match(footer, /noopener noreferrer/);
   assert.doesNotMatch(html + footer, /<iframe|fetch\(|coliving\/en\/start/);
 });

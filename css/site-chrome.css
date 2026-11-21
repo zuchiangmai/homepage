@@ -32,6 +32,9 @@
 .fs-footer .fs-footer-brand img { width: 160px; height: auto; }
 .fs-footer .fs-footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .fs-footer .fs-brand-kit { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 16px; border-radius: 5px; background: #111; color: #fff; font: 400 16px/1.4 Arial, sans-serif; }
+.fs-footer .fs-footer-company { margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(22, 63, 50, 0.2); font: 400 13px/1.5 Arial, sans-serif; color: #163f32; }
+.fs-footer .fs-company-name { margin: 0 0 4px; font-weight: 700; }
+.fs-footer .fs-company-address { margin: 0; opacity: 0.85; }
 .fs-footer .fs-build { margin-top: 24px; font-size: 12px; }
 @media (max-width: 1250px) and (min-width: 901px) {
   .fs-header .fs-header-inner { min-height: 76px; gap: 20px; padding: 12px 24px; }

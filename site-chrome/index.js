@@ -42,6 +42,9 @@ export function footerTree({ assetBase = '/site-chrome', locale } = {}) {
         node('a', { class: 'fs-footer-brand', href: HOME, 'aria-label': COPY[languageCode(locale)].home }, logo(assetBase, true)),
         node('div', { class: 'fs-footer-links', role: 'group', 'aria-label': '4Seas community links' }, COMMUNITY.map(social),
           node('a', { class: 'fs-brand-kit', href: BRAND_KIT, ...external }, 'Brand Kit'))),
+      node('div', { class: 'fs-footer-company' },
+        node('p', { class: 'fs-company-name' }, 'CHIANG MAI DESOC CO., LTD.'),
+        node('p', { class: 'fs-company-address' }, '2/20 Soi 15 Nimmanhaemin Road, Suthep, Chiang Mai 50200, Thailand')),
       { slot: 'footerExtra' })));
 }
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
