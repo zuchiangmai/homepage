@@ -348,4 +348,5 @@ Chinese and Thai translations at `/privacy/zh/` and `/privacy/th/`. The
 homepage links to the English route for the Google OAuth consent screen.
 The release script allowlists the directory, compares it with the active
 release, and checks the public pages and assets against the release from
-both the server and an independent client.
+both the server and an independent client. Each translation links users to
+the existing Coliving contact section in the same language.

@@ -342,17 +342,11 @@ REMOTE
     fail "release rolled back to ${PLAN_OLD_RELEASE}"
   fi
 
-  local relative path expected actual
-  while IFS= read -r relative; do
-    path="${relative%index.html}"
-    expected="$(shasum -a 256 "${repo_root}/${relative}" | awk '{print $1}')"
-    if ! actual="$(curl -fsS --connect-timeout 5 --max-time 20 "${public_url}${path}" | shasum -a 256 | awk '{print $1}')" ||
-       [[ "${actual}" != "${expected}" ]]; then
-      printf 'Independent Privacy validation failed for %s; rolling back.\n' "${path}" >&2
-      rollback_remote "${PLAN_OLD_RELEASE}"
-      fail "release rolled back to ${PLAN_OLD_RELEASE}"
-    fi
-  done < <(git -C "${repo_root}" ls-files privacy)
+  if ! python3 "${script_dir}/validate-privacy.py" --root "${repo_root}" --base-url "${public_url}"; then
+    printf 'Independent Privacy validation failed; rolling back.\n' >&2
+    rollback_remote "${PLAN_OLD_RELEASE}"
+    fail "release rolled back to ${PLAN_OLD_RELEASE}"
+  fi
 
   printf 'Release active:  %s\n' "${PLAN_RELEASE_PATH}"
   printf 'Rollback point:  %s\n' "${PLAN_OLD_RELEASE}"
