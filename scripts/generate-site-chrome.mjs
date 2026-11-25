@@ -12,7 +12,9 @@ async function output(path, value) {
   else await writeFile(url, value);
 }
 const labels = { en: 'EN', zh: '中文', th: 'ไทย' };
-const pages = ['index.html', '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => !path.startsWith('longevity/') || path.startsWith('longevity/longevitymonth'));
+const privacyPaths = { en: '/privacy/', zh: '/privacy/zh/', th: '/privacy/th/' };
+const privacyPages = Object.values(privacyPaths).map(path => path.slice(1) + 'index.html');
+const pages = ['index.html', ...privacyPages, '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => !path.startsWith('longevity/') || path.startsWith('longevity/longevitymonth'));
 for (const path of pages) {
   if (path === '404.html') {
     const options = { assetBase: '/images/site-chrome' };
@@ -31,9 +33,13 @@ for (const path of pages) {
   let html = await readFile(new URL(path, root), 'utf8');
   const section = path.startsWith('longevity/') ? 'longevity' : path.startsWith('coliving-community/') ? 'coliving' : undefined;
   const base = section === 'longevity' ? 'longevity' : 'coliving-community';
-  const locale = section ? path.match(/\/(en|zh|th)\//)?.[1] || 'en' : undefined;
+  const privacyLocale = Object.keys(privacyPaths).find(code => path === privacyPaths[code].slice(1) + 'index.html');
+  const locale = privacyLocale ?? (section ? path.match(/\/(en|zh|th)\//)?.[1] || 'en' : undefined);
+  const languages = privacyLocale ? privacyPaths : section
+    ? Object.fromEntries(Object.keys(labels).map(code => [code, `/${base}/${code}/`]))
+    : {};
   const options = { assetBase: '/images/site-chrome', section, locale,
-    languages: section ? Object.entries(labels).map(([code, label]) => ({ code, label, href: `/${base}/${code}/` })) : [] };
+    languages: Object.entries(languages).map(([code, href]) => ({ code, label: labels[code], href })) };
   for (const [part, render] of [['header', renderHeader], ['footer', renderFooter]]) {
     const start = `<!-- site-chrome:${part}:start -->`, end = `<!-- site-chrome:${part}:end -->`;
     const a = html.indexOf(start), b = html.indexOf(end);

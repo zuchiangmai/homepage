@@ -157,14 +157,14 @@ test("homepage removes the two old event ads but keeps the organizer action", as
   assert.doesNotMatch(source, /tk4seas/)
 })
 
-// The standalone introduction is reinstated through one navigation link only.
-test("homepage only adds the approved Coliving navigation entry", async () => {
-  for (const file of ["../index.html"]) {
-    const source = await readFile(new URL(file, import.meta.url), "utf8")
-    const withoutNavigation = source.replace(/<!-- site-chrome:header:start -->[\s\S]*?<!-- site-chrome:header:end -->/, "")
-    assert.doesNotMatch(withoutNavigation, /co-?living|共享居住|โคลิฟวิ่ง/i, file)
-  }
+test("homepage describes the Coliving portal near the privacy policy link", async () => {
   const source = await readFile(new URL("../index.html", import.meta.url), "utf8")
+  const disclosure = source.match(/<aside id="coliving-privacy"[\s\S]*?<\/aside>/)?.[0]
+  assert.ok(disclosure)
+  assert.match(disclosure, /href="\/coliving\/en\/login"[^>]*>4Seas Coliving<\/a>/)
+  assert.match(disclosure, /href="\/privacy\/"[^>]*>Privacy Policy<\/a>/)
+  const withoutNavigation = source.replace(/<!-- site-chrome:header:start -->[\s\S]*?<!-- site-chrome:header:end -->/, "")
+  assert.doesNotMatch(withoutNavigation.replace(disclosure, ""), /co-?living|共享居住|โคลิฟวิ่ง/i)
   assert.doesNotMatch(source, />Tribes<\/a>/)
 })
 

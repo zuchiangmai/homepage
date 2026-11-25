@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlsplit
 
 
 class PreviewHandler(SimpleHTTPRequestHandler):
-    public = {"index.html", "404.html", "favicon.ico", "css", "images", "js", "longevity", "coliving-community"}
+    public = {"index.html", "404.html", "favicon.ico", "css", "images", "js", "longevity", "coliving-community", "privacy"}
 
     def send_head(self):
         parts = [part for part in unquote(urlsplit(self.path).path).split("/") if part]

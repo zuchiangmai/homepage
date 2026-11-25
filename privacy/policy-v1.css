@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  background: #f4faf6;
+  color: #17372f;
+  font: 1rem/1.7 system-ui, sans-serif;
+}
+
+.policy {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 5vw, 2rem);
+  overflow-wrap: anywhere;
+}
+
+.policy h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.2;
+}
+
+.policy h2 {
+  margin: 2rem 0 0.5rem;
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+
+.policy p {
+  margin: 0 0 0.75rem;
+}
+
+.policy .updated {
+  margin: 0.75rem 0 1.5rem;
+  color: #466359;
+}
+
+.policy a {
+  color: #005040;
+  text-underline-offset: 0.2em;
+}
