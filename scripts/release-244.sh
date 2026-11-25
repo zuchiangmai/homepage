@@ -37,7 +37,7 @@ hash_payload() {
   local directory="$1"
   (
     cd "${directory}"
-    find 404.html favicon.ico index.html css images js longevity coliving-community privacy -type f -exec shasum -a 256 {} + | sort
+    find 404.html favicon.ico index.html css images js longevity coliving-community privacy terms -type f -exec shasum -a 256 {} + | sort
   )
 }
 
@@ -109,7 +109,7 @@ plan_release() {
   plan="${release_state_dir}/${release_name}.plan"
   trap 'if [[ -n "${stage}" ]]; then rm -rf "${stage}"; fi' EXIT
 
-  rsync -a 404.html favicon.ico index.html css images js longevity coliving-community privacy "${stage}/"
+  rsync -a 404.html favicon.ico index.html css images js longevity coliving-community privacy terms "${stage}/"
   if command -v xattr >/dev/null 2>&1; then
     xattr -cr "${stage}"
   fi
@@ -124,7 +124,7 @@ plan_release() {
   # COPYFILE_DISABLE keeps macOS tar from emitting AppleDouble members for the
   # xattrs it cannot strip; GNU tar ignores the variable, so this stays portable.
   COPYFILE_DISABLE=1 tar -C "${stage}" -czf "${artifact}" \
-    404.html favicon.ico index.html css images js longevity coliving-community privacy RELEASE-MANIFEST.txt
+    404.html favicon.ico index.html css images js longevity coliving-community privacy terms RELEASE-MANIFEST.txt
   file_count="$(find "${stage}" -type f | wc -l | tr -d ' ')"
   verify_artifact "${artifact}" "${file_count}"
   artifact_sha="$(shasum -a 256 "${artifact}" | awk '{print $1}')"
@@ -157,6 +157,7 @@ entries=(404.html favicon.ico index.html css images js)
 if [[ -d longevity ]]; then entries+=(longevity); fi
 if [[ -d coliving-community ]]; then entries+=(coliving-community); fi
 if [[ -d privacy ]]; then entries+=(privacy); fi
+if [[ -d terms ]]; then entries+=(terms); fi
 find "${entries[@]}" -type f -exec sha256sum {} + | sort
 BASELINE
   diff -u "${remote_hashes}" "${local_hashes}" >"${diff_file}" || true
@@ -186,7 +187,7 @@ BASELINE
   printf 'Artifact SHA:    %s\n' "${artifact_sha}"
   printf 'Files:           %s\n' "${file_count}"
   printf 'Actions:         upload, verify, extract, atomic current switch, nginx test/reload\n'
-  printf 'Validation:      active target hash, Nginx, Longevity, Coliving and Privacy pages/assets from server and independent client\n'
+  printf 'Validation:      active target hash, Nginx, Longevity, Coliving, Privacy and Terms pages/assets from server and independent client\n'
   printf 'Rollback trigger:any failed post-switch validation\n'
   printf 'Rollback action: atomically restore the recorded old release and reload Nginx\n'
   printf 'Unaffected:      old releases, databases, other sites, GitHub and Gitea refs\n'
@@ -318,7 +319,7 @@ while IFS= read -r file; do
   expected="$(sha256sum "${file}" | awk '{print $1}')"
   actual="$(curl -fsS --resolve 4seas.xyz:443:127.0.0.1 -k --connect-timeout 5 --max-time 20 "https://4seas.xyz/${path}" | sha256sum | awk '{print $1}')"
   [[ "${actual}" == "${expected}" ]]
-done < <(find "${target}/longevity" "${target}/coliving-community" "${target}/privacy" -type f | sort)
+done < <(find "${target}/longevity" "${target}/coliving-community" "${target}/privacy" "${target}/terms" -type f | sort)
 trap - ERR
 REMOTE
 
@@ -342,8 +343,8 @@ REMOTE
     fail "release rolled back to ${PLAN_OLD_RELEASE}"
   fi
 
-  if ! python3 "${script_dir}/validate-privacy.py" --root "${repo_root}" --base-url "${public_url}"; then
-    printf 'Independent Privacy validation failed; rolling back.\n' >&2
+  if ! python3 "${script_dir}/validate-legal.py" --root "${repo_root}" --base-url "${public_url}"; then
+    printf 'Independent Privacy or Terms validation failed; rolling back.\n' >&2
     rollback_remote "${PLAN_OLD_RELEASE}"
     fail "release rolled back to ${PLAN_OLD_RELEASE}"
   fi

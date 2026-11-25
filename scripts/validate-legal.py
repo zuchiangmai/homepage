@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Compare public Privacy pages and assets with the tracked release files."""
+"""Compare public Privacy and Terms pages and assets with the tracked release files."""
 import argparse
 import subprocess
 from pathlib import Path
 
 
-def validate(root, base_url):
-    tracked = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z', '--', 'privacy/'])
+def validate(root, base_url, section):
+    tracked = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z', '--', section + '/'])
     files = tracked.decode().split('\0')[:-1]
     if not files:
-        raise ValueError('Privacy payload is missing')
+        raise ValueError(section.capitalize() + ' payload is missing')
 
     for relative in files:
         local_bytes = (root / relative).read_bytes()
@@ -33,7 +33,8 @@ if __name__ == '__main__':
     parser.add_argument('--base-url', default='https://4seas.xyz/')
     args = parser.parse_args()
     try:
-        count = validate(args.root, args.base_url)
+        for section in ('privacy', 'terms'):
+            count = validate(args.root, args.base_url, section)
+            print('Verified %d %s pages/assets by HTTP status and content.' % (count, section.capitalize()))
     except (OSError, ValueError, subprocess.CalledProcessError) as exc:
-        parser.exit(1, 'Privacy validation failed: %s\n' % exc)
-    print('Verified %d Privacy pages/assets by HTTP status and content.' % count)
+        parser.exit(1, 'Legal page validation failed: %s\n' % exc)

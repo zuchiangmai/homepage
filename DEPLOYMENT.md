@@ -113,7 +113,7 @@ Create an isolated temporary directory. Never archive the repository root direct
 
 ```bash
 FOURSEAS_STAGE_DIR="$(mktemp -d /tmp/4seas-home-stage.XXXXXX)"
-rsync -a 404.html favicon.ico index.html css images js longevity coliving-community privacy "${FOURSEAS_STAGE_DIR}/"
+rsync -a 404.html favicon.ico index.html css images js longevity coliving-community privacy terms "${FOURSEAS_STAGE_DIR}/"
 ```
 
 On macOS, remove extended attributes from the temporary copy only:
@@ -148,7 +148,7 @@ Package explicit top-level entries. Do not archive `.`: a `mktemp` directory is 
 ```bash
 FOURSEAS_ARTIFACT="/tmp/4seas-home-<UTC>-<revision>.tar.gz"
 tar -C "${FOURSEAS_STAGE_DIR}" -czf "${FOURSEAS_ARTIFACT}" \
-  404.html favicon.ico index.html css images js longevity coliving-community privacy RELEASE-MANIFEST.txt
+  404.html favicon.ico index.html css images js longevity coliving-community privacy terms RELEASE-MANIFEST.txt
 ```
 
 Verify that the archive has no absolute path, `..` component, or root `./` metadata entry. Record:
@@ -350,3 +350,11 @@ The release script allowlists the directory, compares it with the active
 release, and checks the public pages and assets against the release from
 both the server and an independent client. Each translation links users to
 the existing Coliving contact section in the same language.
+
+## Terms of service
+
+The `terms/` directory serves the English terms at `/terms/` and the Chinese
+and Thai translations at `/terms/zh/` and `/terms/th/`. The homepage links to
+the English route for the Google OAuth consent screen. The terms use the same
+assets as the privacy policy. Release validation checks both sets of pages
+from the origin and the public endpoint.

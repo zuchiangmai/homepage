@@ -9,9 +9,9 @@ import { promisify } from 'node:util';
 import test from 'node:test';
 
 const root = new URL('../', import.meta.url);
-const validator = fileURLToPath(new URL('scripts/validate-privacy.py', root));
+const validator = fileURLToPath(new URL('scripts/validate-legal.py', root));
 const run = promisify(execFile);
-test('each privacy policy points to the existing localized Coliving contact section', () => {
+test('each legal page points to the existing localized Coliving contact section', () => {
   for (const locale of ['en', 'zh', 'th']) {
     const directory = locale === 'en' ? '' : locale + '/';
     const policy = readFileSync(new URL(`privacy/${directory}index.html`, root), 'utf8');
@@ -19,14 +19,18 @@ test('each privacy policy points to the existing localized Coliving contact sect
     assert.ok(policy.includes(`href="/coliving-community/${locale}/#contact"`));
     assert.match(contactPage, /id="contact"/);
     assert.doesNotMatch(policy, /mailto:/i);
+    const terms = readFileSync(new URL(`terms/${directory}index.html`, root), 'utf8');
+    assert.ok(terms.includes(`href="/coliving-community/${locale}/#contact"`));
+    assert.ok(terms.includes(`href="/privacy/${directory}"`));
+    assert.doesNotMatch(terms, /mailto:/i);
   }
 });
 
-test('privacy validator accepts the exact payload and rejects stale content and missing files', async () => {
+test('legal page validator accepts the exact payload and rejects stale content and missing files', async () => {
   let mode = 'raw';
   const server = createServer((request, response) => {
     const path = request.url.endsWith('/') ? request.url + 'index.html' : request.url;
-    if (mode === 'missing' && path === '/privacy/th/index.html') {
+    if (mode === 'missing' && path === '/terms/th/index.html') {
       response.writeHead(404).end();
       return;
     }
@@ -48,6 +52,7 @@ test('privacy validator accepts the exact payload and rejects stale content and 
   try {
     const { stdout } = await validate();
     assert.match(stdout, /Verified 5 Privacy pages\/assets/);
+    assert.match(stdout, /Verified 3 Terms pages\/assets/);
     mode = 'html';
     await assert.rejects(validate(), /Content mismatch: privacy\/index\.html/);
     mode = 'asset';

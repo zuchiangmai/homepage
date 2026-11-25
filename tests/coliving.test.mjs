@@ -62,6 +62,6 @@ test('language switching preserves the section and query without breaking applic
 test('release packaging and verification include the new isolated directory', () => {
   const release=read('scripts/release-244.sh');
   assert.match(release,/rsync -a .*coliving-community/);
-  assert.match(release,/css images js longevity coliving-community privacy RELEASE-MANIFEST.txt/);
+  assert.match(release,/css images js longevity coliving-community privacy terms RELEASE-MANIFEST.txt/);
   assert.match(release,/validate-coliving.py/);
 });

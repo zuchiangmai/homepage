@@ -12,9 +12,14 @@ async function output(path, value) {
   else await writeFile(url, value);
 }
 const labels = { en: 'EN', zh: '中文', th: 'ไทย' };
-const privacyPaths = { en: '/privacy/', zh: '/privacy/zh/', th: '/privacy/th/' };
-const privacyPages = Object.values(privacyPaths).map(path => path.slice(1) + 'index.html');
-const pages = ['index.html', ...privacyPages, '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => !path.startsWith('longevity/') || path.startsWith('longevity/longevitymonth'));
+const legalPages = new Map();
+for (const section of ['privacy', 'terms']) {
+  const paths = { en: `/${section}/`, zh: `/${section}/zh/`, th: `/${section}/th/` };
+  for (const [locale, path] of Object.entries(paths)) {
+    legalPages.set(path.slice(1) + 'index.html', { locale, paths });
+  }
+}
+const pages = ['index.html', ...legalPages.keys(), '404.html', ...['longevity', 'coliving-community'].flatMap(base => ['', 'en/', 'zh/', 'th/'].map(lang => `${base}/${lang}index.html`))].filter(path => !path.startsWith('longevity/') || path.startsWith('longevity/longevitymonth'));
 for (const path of pages) {
   if (path === '404.html') {
     const options = { assetBase: '/images/site-chrome' };
@@ -33,11 +38,11 @@ for (const path of pages) {
   let html = await readFile(new URL(path, root), 'utf8');
   const section = path.startsWith('longevity/') ? 'longevity' : path.startsWith('coliving-community/') ? 'coliving' : undefined;
   const base = section === 'longevity' ? 'longevity' : 'coliving-community';
-  const privacyLocale = Object.keys(privacyPaths).find(code => path === privacyPaths[code].slice(1) + 'index.html');
-  const locale = privacyLocale ?? (section ? path.match(/\/(en|zh|th)\//)?.[1] || 'en' : undefined);
-  const languages = privacyLocale ? privacyPaths : section
+  const legal = legalPages.get(path);
+  const locale = legal?.locale ?? (section ? path.match(/\/(en|zh|th)\//)?.[1] || 'en' : undefined);
+  const languages = legal?.paths ?? (section
     ? Object.fromEntries(Object.keys(labels).map(code => [code, `/${base}/${code}/`]))
-    : {};
+    : {});
   const options = { assetBase: '/images/site-chrome', section, locale,
     languages: Object.entries(languages).map(([code, href]) => ({ code, label: labels[code], href })) };
   for (const [part, render] of [['header', renderHeader], ['footer', renderFooter]]) {

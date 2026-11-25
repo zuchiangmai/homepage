@@ -163,6 +163,7 @@ test("homepage describes the Coliving portal near the privacy policy link", asyn
   assert.ok(disclosure)
   assert.match(disclosure, /href="\/coliving\/en\/login"[^>]*>4Seas Coliving<\/a>/)
   assert.match(disclosure, /href="\/privacy\/"[^>]*>Privacy Policy<\/a>/)
+  assert.match(disclosure, /href="\/terms\/"[^>]*>Terms of Service<\/a>/)
   const withoutNavigation = source.replace(/<!-- site-chrome:header:start -->[\s\S]*?<!-- site-chrome:header:end -->/, "")
   assert.doesNotMatch(withoutNavigation.replace(disclosure, ""), /co-?living|共享居住|โคลิฟวิ่ง/i)
   assert.doesNotMatch(source, />Tribes<\/a>/)

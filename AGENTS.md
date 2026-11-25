@@ -27,7 +27,7 @@ Key rules:
 - Validate from both the server and an independent local client. Roll back immediately if any required validation fails.
 - When CSS or JavaScript changes, version its URL in `index.html` so Cloudflare cannot serve the previous asset for up to seven days.
 
-The production payload allowlist is: `404.html`, `favicon.ico`, `index.html`, `css/`, `images/`, `js/`, `longevity/`, `coliving-community/`, `privacy/`, and `RELEASE-MANIFEST.txt`. Tests, Git metadata, documentation, environment files, and credentials must never be included.
+The production payload allowlist is: `404.html`, `favicon.ico`, `index.html`, `css/`, `images/`, `js/`, `longevity/`, `coliving-community/`, `privacy/`, `terms/`, and `RELEASE-MANIFEST.txt`. Tests, Git metadata, documentation, environment files, and credentials must never be included.
 
 ## 公共 Header / Footer / 404（编码前必读）
 
